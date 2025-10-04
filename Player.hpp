@@ -20,14 +20,14 @@ public:
     void switchWeapon(WeaponType newWeaponType);
     
     // Переопределенные методы
-    void showStats() const override;
+    void show_stats() const override;
     void update() override;
     
 private:
     int score_;
-    int scoreForNextLevel_;
-    int lvl_;
-    int healthPotions_;
+    int score_for_next_level_;
+    int level_;
+    int health_potions_count_;
     static const int POTION_HEAL_AMOUNT = 50;
 };
 

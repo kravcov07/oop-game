@@ -13,12 +13,12 @@ public:
     void update(Player& player); // AI логика
     
     // Переопределенные методы
-    void showStats() const override;
+    void show_stats() const override;
     void update() override;
 
 private:
     // Дополнительные поля для AI
-    int turnsSinceLastMove_;
+    int turns_since_last_move_;
 };
 
 #endif

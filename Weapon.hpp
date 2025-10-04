@@ -5,6 +5,7 @@
 #include <cmath>
 
 enum class WeaponType {
+    UNARMED,
     FISTS,
     SWORD,
     BOW,
@@ -14,8 +15,8 @@ enum class WeaponType {
 class Weapon {
 private:
     std::string name_;
-    int damage_;
-    int range_;
+    int damage_value_;
+    int attack_range_;
 public:
     Weapon(WeaponType type);
     std::string getName() const;

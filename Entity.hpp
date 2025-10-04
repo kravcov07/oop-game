@@ -10,32 +10,32 @@ public:
     virtual ~Entity() = default;
     
     // Геттеры
-    int getHealth() const;
-    int getX() const;
-    int getY() const;
-    int getMaxHealth() const;
-    Weapon getCurrentWeapon();
+    int get_health() const { return health_; }
+    int get_x() const { return position_x_; }
+    int get_y() const { return position_y_; }
+    int get_max_health() const { return max_health_; }
+    Weapon get_current_weapon() { return weapon_; }
     
     // Сеттеры
-    void setPosition(int x, int y);
-    void setHealth(int health);
+    void set_position(int x, int y);
+    void set_health(int health);
     
     // Основные методы
-    void takeDamage(int damage);
+    void take_damage(int damage);
     void heal(int amount);
-    void healFull();
-    bool isAlive() const;
-    virtual void showStats() const; // виртуальный для переопределения
+    void heal_full();
+    bool is_alive() const;
+    virtual void show_stats() const; // виртуальный для переопределения
     
     // Чисто виртуальные методы (должны быть реализованы в производных классах)
     virtual void update() = 0; // для AI или логики обновления
 
 protected:
     int health_;
-    int maxHealth_;
+    int max_health_;
     Weapon weapon_;
-    int x_;
-    int y_;
+    int position_x_;
+    int position_y_;
 };
 
 #endif

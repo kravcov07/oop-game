@@ -1,49 +1,43 @@
 #include "Entity.hpp"
 
 Entity::Entity(int health, int x, int y, WeaponType weapon)
-    : health_(health), maxHealth_(health), x_(x), y_(y),
+    : health_(health), max_health_(health), position_x_(x), position_y_(y),
       weapon_(weapon) {}
 
-int Entity::getHealth() const { return health_; }
-int Entity::getX() const { return x_; }
-int Entity::getY() const { return y_; }
-int Entity::getMaxHealth() const { return maxHealth_; }
-Weapon Entity::getCurrentWeapon() { return weapon_; }
-
-void Entity::setPosition(int x, int y) {
-    x_ = x;
-    y_ = y;
+void Entity::set_position(int x, int y) {
+    position_x_ = x;
+    position_y_ = y;
 }
 
-void Entity::setHealth(int health) {
+void Entity::set_health(int health) {
     if (health < 0) health = 0;
-    if (health > maxHealth_) health = maxHealth_;
+    if (health > max_health_) health = max_health_;
     health_ = health;
 }
 
-void Entity::takeDamage(int damage) {
+void Entity::take_damage(int damage) {
     health_ -= damage;
     if (health_ < 0) health_ = 0;
 }
 
 void Entity::heal(int amount) {
     health_ += amount;
-    if (health_ > maxHealth_) {
-        health_ = maxHealth_;
+    if (health_ > max_health_) {
+        health_ = max_health_;
     }
 }
 
-void Entity::healFull() {
-    health_ = maxHealth_;
+void Entity::heal_full() {
+    health_ = max_health_;
 }
 
-bool Entity::isAlive() const {
+bool Entity::is_alive() const {
     return health_ > 0;
 }
 
-void Entity::showStats() const {
-    std::cout << "Health: " << health_ << "/" << maxHealth_
-              << "\nPosition: (" << x_ << ", " << y_ << ")" 
+void Entity::show_stats() const {
+    std::cout << "Health: " << health_ << "/" << max_health_
+              << "\nPosition: (" << position_x_ << ", " << position_y_ << ")" 
               << "\nWeapon: " << weapon_.getName()
               << " (Damage: " << weapon_.getDamage() 
               << ", Range: " << weapon_.getRange() << ")" << std::endl;

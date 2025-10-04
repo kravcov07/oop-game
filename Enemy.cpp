@@ -3,29 +3,29 @@
 
 Enemy::Enemy(int health, int startX, int startY)
     : Entity(health, startX, startY, WeaponType::FISTS),
-        turnsSinceLastMove_(0) {}
+        turns_since_last_move_(0) {}
 
 void Enemy::move(int dx, int dy, Player& player) {
-    int newX = x_ + dx;
-    int newY = y_ + dy;
+    int newX = get_x() + dx;
+    int newY = get_y() + dy;
     
-    if (newX == player.getX() && newY == player.getY()) {
-        player.takeDamage(weapon_.getDamage());
+    if (newX == player.get_x() && newY == player.get_y()) {
+        player.take_damage(weapon_.getDamage());
         std::cout << "Enemy attacks player for " << weapon_.getDamage() << " damage!" << std::endl;
     } else {
-        x_ = newX;
-        y_ = newY;
+        position_x_ = newX;
+        position_y_ = newY;
     }
 }
 
 void Enemy::update(Player& player) {
     int dx = 0, dy = 0;
     
-    if (x_ < player.getX()) dx = 1;
-    else if (x_ > player.getX()) dx = -1;
+    if (position_x_ < player.get_x()) dx = 1;
+    else if (position_x_ > player.get_x()) dx = -1;
     
-    if (y_ < player.getY()) dy = 1;
-    else if (y_ > player.getY()) dy = -1;
+    if (position_y_ < player.get_y()) dy = 1;
+    else if (position_y_ > player.get_y()) dy = -1;
     
     if (dx != 0) {
         move(dx, 0, player);
@@ -34,9 +34,9 @@ void Enemy::update(Player& player) {
     }
 }
 
-void Enemy::showStats() const {
+void Enemy::show_stats() const {
     std::cout << "=== ENEMY STATS ===" << std::endl;
-    Entity::showStats();
+    Entity::show_stats();
 }
 
 void Enemy::update() {}

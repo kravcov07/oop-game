@@ -2,31 +2,31 @@
 #include <iostream>
 
 std::string Weapon::getName() const { return name_; }
-int Weapon::getDamage() const { return damage_; }
-int Weapon::getRange() const { return range_; }
-void Weapon::setDamage(int damage){ damage_ = damage; }
+int Weapon::getDamage() const { return damage_value_; }
+int Weapon::getRange() const { return attack_range_; }
+void Weapon::setDamage(int damage){ damage_value_ = damage; }
 
 Weapon::Weapon(WeaponType type) {
     switch(type) {
         case WeaponType::SWORD:
             name_ = "Sword";
-            damage_ = 25;
-            range_ = 1;
+            damage_value_ = 25;
+            attack_range_ = 1;
             break;
         case WeaponType::BOW:
             name_ = "Bow";
-            damage_ = 15;
-            range_ = 5;
+            damage_value_ = 15;
+            attack_range_ = 5;
             break;
         case WeaponType::STAFF:
             name_ = "Staff";
-            damage_ = 20;
-            range_ = 3;
+            damage_value_ = 20;
+            attack_range_ = 3;
             break;
         default:
             name_ = "Fists";
-            damage_ = 5;
-            range_ = 1;
+            damage_value_ = 5;
+            attack_range_ = 1;
             break;
     }
 }
