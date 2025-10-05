@@ -21,16 +21,22 @@ void Enemy::move(int dx, int dy, Player& player) {
 void Enemy::update(Player& player) {
     int dx = 0, dy = 0;
     
-    if (position_x_ < player.get_x()) dx = 1;
-    else if (position_x_ > player.get_x()) dx = -1;
+    if (get_x() < player.get_x()) dx = 1;
+    else if (get_x() > player.get_x()) dx = -1;
     
-    if (position_y_ < player.get_y()) dy = 1;
-    else if (position_y_ > player.get_y()) dy = -1;
+    if (get_y() < player.get_y()) dy = 1;
+    else if (get_y() > player.get_y()) dy = -1;
     
-    if (dx != 0) {
-        move(dx, 0, player);
-    } else if (dy != 0) {
-        move(0, dy, player);
+    // Простое движение к игроку
+    if (dx != 0 || dy != 0) {
+        // В реальной реализации нужно проверять возможность движения
+        set_position(get_x() + dx, get_y() + dy);
+    }
+    
+    // Атака, если рядом с игроком
+    int distance = std::abs(get_x() - player.get_x()) + std::abs(get_y() - player.get_y());
+    if (distance <= 1) {
+        player.take_damage(get_current_weapon().getDamage());
     }
 }
 

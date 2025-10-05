@@ -1,11 +1,6 @@
 #include "Weapon.hpp"
 #include <iostream>
 
-std::string Weapon::getName() const { return name_; }
-int Weapon::getDamage() const { return damage_value_; }
-int Weapon::getRange() const { return attack_range_; }
-void Weapon::setDamage(int damage){ damage_value_ = damage; }
-
 Weapon::Weapon(WeaponType type) {
     switch(type) {
         case WeaponType::SWORD:
@@ -23,10 +18,14 @@ Weapon::Weapon(WeaponType type) {
             damage_value_ = 20;
             attack_range_ = 3;
             break;
-        default:
+        case WeaponType::FISTS:
             name_ = "Fists";
             damage_value_ = 5;
             attack_range_ = 1;
+        default:
+            name_ = "Unarmed";
+            damage_value_ = 0;
+            attack_range_ = 0;
             break;
     }
 }

@@ -1,7 +1,7 @@
 #include "Cell.hpp"
 #include "Entity.hpp"
 
-Cell::Cell(CellType type, bool is_occupied) : type_(type), is_occupied_(is_occupied) {}
+Cell::Cell(CellType type, Entity* entity) : type_(type), entity_(entity) {}
 
 int Cell::get_effect_value() const {
     switch (type_) {
@@ -11,11 +11,13 @@ int Cell::get_effect_value() const {
     }
 }
 
-void Cell::apply_effect(Entity& entity) const {
+void Cell::apply_effect() const {
+    if (entity_ == nullptr) return;
+    
     int effect = get_effect_value();
     if (effect > 0) {
-        entity.heal(effect);
+        entity_->heal(effect);
     } else if (effect < 0) {
-        entity.take_damage(-effect);
+        entity_->take_damage(-effect);
     }
 }
