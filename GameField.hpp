@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <memory>
+
 #include "Cell.hpp"
 #include "Player.hpp"
 #include "Enemy.hpp"
@@ -36,17 +37,19 @@ public:
     bool is_cell_occupied(int x, int y) const;
     bool is_cell_passable(int x, int y) const;
     
-    void set_dimensions(int width, int height);
-
+    
     bool place_player(std::unique_ptr<Player> player, int x, int y);
     bool place_enemy(std::unique_ptr<Enemy> enemy, int x, int y);
     bool place_tower(std::unique_ptr<Tower> tower, int x, int y);
-
+    
     bool move_entity(int from_x, int from_y, int to_x, int to_y);
 
+    void remove_dead_entity(Entity* dead_enemy);
+    
     void draw_minimal() const;
     
 private:
+    void set_dimensions(int width, int height);
     int width_;
     int height_;
     Cell** cells_;
@@ -58,7 +61,7 @@ private:
     void initialize_cells();
     void cleanup_cells();
     void copy_from(const GameField& other);
-    void move_from(GameField&& other) noexcept;
+    void move_from(GameField&& other);
 };
 
 #endif

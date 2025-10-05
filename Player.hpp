@@ -2,7 +2,6 @@
 #define PLAYER_H
 
 #include "Entity.hpp"
-#include "Weapon.hpp"
 
 class Player : public Entity {
 public:
@@ -19,7 +18,6 @@ public:
     void addHealthPotion();
     void switchWeapon(WeaponType newWeaponType);
     
-    // Переопределенные методы
     void show_stats() const override;
     void update() override;
     

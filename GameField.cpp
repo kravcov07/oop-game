@@ -189,6 +189,24 @@ bool GameField::is_cell_passable(int x, int y) const {
     return cells_[y][x].is_passable();
 }
 
+void GameField::remove_dead_entity(Entity* dead_entity) {
+    cells_[dead_entity->get_y()][dead_entity->get_x()].clear_entity();
+    
+    for (auto it = enemies_.begin(); it != enemies_.end(); ++it) {
+        if (it->get() == dead_entity) {
+            enemies_.erase(it);
+            return;
+        }
+    }
+    
+    for (auto it = towers_.begin(); it != towers_.end(); ++it) {
+        if (it->get() == dead_entity) {
+            towers_.erase(it);
+            return;
+        }
+    }
+}
+
 void GameField::draw_minimal() const {
     for (int y = 0; y < height_; y++) {
         for (int x = 0; x < width_; x++) {

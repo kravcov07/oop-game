@@ -2,11 +2,11 @@
 #define CELL_H
 
 enum class CellType {
-    EMPTY,          // Обычная клетка
-    WALL,           // Стена (непроходимая)
-    SLOW_ZONE,      // Замедляющая клетка
-    HEALING_ZONE,   // Лечащая зона
-    DAMAGE_ZONE     // Повреждающая зона
+    EMPTY,
+    WALL,
+    SLOW_ZONE,
+    HEALING_ZONE,
+    DAMAGE_ZONE
 };
 
 class Entity;

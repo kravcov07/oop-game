@@ -1,23 +1,22 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include "Entity.hpp"
 #include "Player.hpp"
+
+class GameField;
 
 class Enemy : public Entity {
 public:
     Enemy(int health, int startX, int startY);
     
-    // Уникальные методы врага
-    void move(int dx, int dy, Player& player);
-    void update(Player& player); // AI логика
+    void move(Player& player, GameField& game_field);
+    void update(Player& player, GameField& game_field);
     
-    // Переопределенные методы
+
     void show_stats() const override;
     void update() override;
 
 private:
-    // Дополнительные поля для AI
     int turns_since_last_move_;
 };
 

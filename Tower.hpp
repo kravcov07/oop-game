@@ -2,9 +2,6 @@
 #define TOWER_H
 
 #include "GameField.hpp"
-#include <memory>
-#include <cstdlib>
-#include <cmath>
 
 class Tower: public Entity{
 public:

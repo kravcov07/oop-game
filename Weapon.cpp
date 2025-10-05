@@ -1,5 +1,4 @@
 #include "Weapon.hpp"
-#include <iostream>
 
 Weapon::Weapon(WeaponType type) {
     switch(type) {
@@ -22,6 +21,7 @@ Weapon::Weapon(WeaponType type) {
             name_ = "Fists";
             damage_value_ = 5;
             attack_range_ = 1;
+            break;
         default:
             name_ = "Unarmed";
             damage_value_ = 0;
