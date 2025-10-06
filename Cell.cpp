@@ -1,8 +1,6 @@
 #include "Cell.hpp"
 #include "Entity.hpp"
 
-Cell::Cell(CellType type, Entity* entity) : type_(type), entity_(entity) {}
-
 int Cell::get_effect_value() const {
     switch (type_) {
         case CellType::HEALING_ZONE: return 10;

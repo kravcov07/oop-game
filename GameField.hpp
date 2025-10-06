@@ -36,17 +36,18 @@ public:
     bool is_coordinates_valid(int x, int y) const;
     bool is_cell_occupied(int x, int y) const;
     bool is_cell_passable(int x, int y) const;
-    
-    
-    bool place_player(std::unique_ptr<Player> player, int x, int y);
-    bool place_enemy(std::unique_ptr<Enemy> enemy, int x, int y);
-    bool place_tower(std::unique_ptr<Tower> tower, int x, int y);
-    
-    bool move_entity(int from_x, int from_y, int to_x, int to_y);
 
-    void remove_dead_entity(Entity* dead_enemy);
+    void spawn_random_enemies(int count);
+    void spawn_random_towers(int count);
+    void spawn_random_cell_type(int count, CellType cell_type);
     
-    void draw_minimal() const;
+    bool place_entity(std::unique_ptr<Entity> entity, int x, int y);
+
+    bool move_entity(int from_x, int from_y, int to_x, int to_y);
+    
+    void draw_field() const;
+
+    void update();
     
 private:
     void set_dimensions(int width, int height);

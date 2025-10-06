@@ -30,7 +30,7 @@ Weapon::Weapon(WeaponType type) {
     }
 }
 
-WeaponType Weapon::getType() const {
+WeaponType Weapon::get_type() const {
     if (name_ == "Sword") return WeaponType::SWORD;
     if (name_ == "Bow") return WeaponType::BOW;
     if (name_ == "Staff") return WeaponType::STAFF;

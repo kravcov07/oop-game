@@ -94,7 +94,7 @@ void GameField::copy_from(const GameField& other){
     }
 }
 
-void GameField::move_from(GameField&& other) noexcept{
+void GameField::move_from(GameField&& other){
     set_dimensions(other.get_width(), other.get_height());
     cells_ = other.cells_;
     player_ = std::move(other.player_);
@@ -113,7 +113,7 @@ bool GameField::are_dimensions_valid(int width, int height){
 }
 
 bool GameField::is_coordinates_valid(int x, int y) const {
-    return x >= 0 && x <= width_ && y >= 0 && y <= height_;
+    return x >= 0 && x <= width_ - 1 && y >= 0 && y <= height_ - 1;
 }
 
 bool GameField::is_cell_occupied(int x, int y) const{
@@ -131,36 +131,30 @@ Cell& GameField::get_cell(int x, int y){
     return cells_[y][x];
 }
 
-bool GameField::place_player(std::unique_ptr<Player> player, int x, int y) {
-    if (!is_coordinates_valid(x, y) || is_cell_occupied(x, y)) {
-        return false;
-    }
-    
-    player_ = std::move(player);
-    cells_[y][x].set_entity(player_.get());
-    return true;
+bool GameField::is_cell_passable(int x, int y) const {
+    if (!is_coordinates_valid(x, y)) return false;
+    return cells_[y][x].is_passable();
 }
 
-bool GameField::place_enemy(std::unique_ptr<Enemy> enemy, int x, int y){
-    if(!is_coordinates_valid(x, y) || is_cell_occupied(x, y)){
+
+bool GameField::place_entity(std::unique_ptr<Entity> entity, int x, int y) {
+    if (!is_cell_passable(x, y)) {
         return false;
     }
 
-    Enemy* enemy_ptr = enemy.get();
-    enemies_.push_back(std::move(enemy));
-    cells_[y][x].set_entity(enemy_ptr);
+    Entity* entity_ptr = entity.get();
     
-    return true;
-}
-
-bool GameField::place_tower(std::unique_ptr<Tower> tower, int x, int y) {
-    if (!is_coordinates_valid(x, y) || is_cell_occupied(x, y)) {
+    if (dynamic_cast<Player*>(entity_ptr)) {
+        player_ = std::unique_ptr<Player>(static_cast<Player*>(entity.release()));
+    } else if (dynamic_cast<Enemy*>(entity_ptr)) {
+        enemies_.push_back(std::unique_ptr<Enemy>(static_cast<Enemy*>(entity.release())));
+    } else if (dynamic_cast<Tower*>(entity_ptr)) {
+        towers_.push_back(std::unique_ptr<Tower>(static_cast<Tower*>(entity.release())));
+    } else {
         return false;
     }
     
-    Tower* tower_ptr = tower.get();
-    towers_.push_back(std::move(tower));
-    cells_[y][x].set_entity(tower_ptr);
+    cells_[y][x].set_entity(entity_ptr);
     return true;
 }
 
@@ -176,7 +170,6 @@ bool GameField::move_entity(int from_x, int from_y, int to_x, int to_y) {
         return false;
     }
     
-    // Перемещаем указатель
     Entity* entity = from_cell.get_entity();
     to_cell.set_entity(entity);
     from_cell.clear_entity();
@@ -184,57 +177,143 @@ bool GameField::move_entity(int from_x, int from_y, int to_x, int to_y) {
     return true;
 }
 
-bool GameField::is_cell_passable(int x, int y) const {
-    if (!is_coordinates_valid(x, y)) return false;
-    return cells_[y][x].is_passable();
+void GameField::spawn_random_towers(int count) {
+    int spawned = 0;
+    int attempts = 0;
+    const int MAX_ATTEMPTS = count * 10;
+    
+    while (spawned < count && attempts < MAX_ATTEMPTS) {
+        attempts++;
+        
+        int x = rand() % width_;
+        int y = rand() % height_;
+        
+        if (is_cell_passable(x, y)) {
+            auto tower = std::make_unique<Tower>(100, x, y, WeaponType::UNARMED, 2, 5);
+            if (place_entity(std::move(tower), x, y)) {
+                spawned++;
+            }
+        }
+    }    
 }
 
-void GameField::remove_dead_entity(Entity* dead_entity) {
-    cells_[dead_entity->get_y()][dead_entity->get_x()].clear_entity();
+void GameField::spawn_random_enemies(int count) {
+    int spawned = 0;
+    int attempts = 0;
+    const int MAX_ATTEMPTS = count * 10;
     
-    for (auto it = enemies_.begin(); it != enemies_.end(); ++it) {
-        if (it->get() == dead_entity) {
-            enemies_.erase(it);
-            return;
+    while (spawned < count && attempts < MAX_ATTEMPTS) {
+        attempts++;
+        
+        int x = rand() % width_;
+        int y = rand() % height_;
+    
+        if (is_cell_passable(x, y)) {
+            auto enemy = std::make_unique<Enemy>(50, x, y);
+            if (place_entity(std::move(enemy), x, y)) {
+                spawned++;
+            }
+        }
+    }
+}
+
+void GameField::spawn_random_cell_type(int count, CellType cell_type){
+    int spawned = 0;
+    int attempts = 0;
+    const int MAX_ATTEMPTS = count * 10;
+    
+    while (spawned < count && attempts < MAX_ATTEMPTS) {
+        attempts++;
+        
+        int x = rand() % width_;
+        int y = rand() % height_;
+        
+        if (is_cell_passable(x, y)) {
+            if (player_ && player_->get_x() == x && player_->get_y() == y) {
+                continue;
+            }
+            
+            cells_[y][x].set_type(cell_type);
+            spawned++;
         }
     }
     
-    for (auto it = towers_.begin(); it != towers_.end(); ++it) {
-        if (it->get() == dead_entity) {
-            towers_.erase(it);
-            return;
+}
+
+void GameField::update() {
+    auto enemy_it = enemies_.begin();
+    while (enemy_it != enemies_.end()) {
+        if (!(*enemy_it)->is_alive()) {
+            int x = (*enemy_it)->get_x();
+            int y = (*enemy_it)->get_y();
+
+            if(player_){
+                player_->add_score((*enemy_it)->get_max_health()/2);
+            }
+
+            cells_[y][x].clear_entity();
+
+            enemy_it = enemies_.erase(enemy_it);
+        } else {
+            (*enemy_it)->update(*this);
+            ++enemy_it;
+        }
+    }
+    
+    auto tower_it = towers_.begin();
+    while (tower_it != towers_.end()) {
+        if (!(*tower_it)->is_alive()) {
+            int x = (*tower_it)->get_x();
+            int y = (*tower_it)->get_y();
+
+            if(player_){
+                player_->add_score((*tower_it)->get_max_health()/2);
+            }
+            
+            cells_[y][x].clear_entity();
+
+            tower_it = towers_.erase(tower_it);
+        } else {
+            (*tower_it)->update(*this);
+            ++tower_it;
         }
     }
 }
 
-void GameField::draw_minimal() const {
+void GameField::draw_field() const {
+    std::cout << "   ";
+    for (int x = 0; x < width_; x++) {
+        std::cout << x << (x < 10 ? "  " : " ");
+    }
+    std::cout << '\n';
+    
     for (int y = 0; y < height_; y++) {
+        std::cout << y << (y < 10 ? "  " : " ");
+        
         for (int x = 0; x < width_; x++) {
             const Cell& cell = cells_[y][x];
             Entity* entity = cell.get_entity();
             
             if (entity) {
-                // Проверяем тип сущности
                 if (dynamic_cast<Player*>(entity)) {
-                    std::cout << "P ";
+                    std::cout << "P";
                 } else if (dynamic_cast<Enemy*>(entity)) {
-                    std::cout << "E ";
+                    std::cout << "E";
                 } else if (dynamic_cast<Tower*>(entity)) {
-                    std::cout << "T ";  // Tower отображается как 'T'
+                    std::cout << "T";
                 } else {
-                    std::cout << "O ";
+                    std::cout << "O";
                 }
             } else {
-                // Нет сущности - показываем тип клетки
                 switch (cell.get_type()) {
-                    case CellType::WALL: std::cout << "# "; break;
-                    case CellType::HEALING_ZONE: std::cout << "+ "; break;
-                    case CellType::DAMAGE_ZONE: std::cout << "x "; break;
-                    case CellType::SLOW_ZONE: std::cout << "~ "; break;
-                    default: std::cout << ". "; break;
+                    case CellType::WALL: std::cout << "#"; break;
+                    case CellType::HEALING_ZONE: std::cout << "+"; break;
+                    case CellType::DAMAGE_ZONE: std::cout << "x"; break;
+                    case CellType::SLOW_ZONE: std::cout << "~"; break;
+                    default: std::cout << "."; break;
                 }
             }
-            std::cout << " ";
+            std::cout << "  ";
         }
         std::cout << "\n";
     }

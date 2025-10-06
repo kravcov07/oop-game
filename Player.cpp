@@ -1,21 +1,37 @@
 #include "Player.hpp"
-
-int Player::getScore() const { return score_; }
-int Player::getLevel() const { return level_; }
-int Player::getHealthPotionCount() const { return health_potions_count_; }
-
-Player::Player(int health, int startX, int startY)
-    : Entity(health, startX, startY, WeaponType::SWORD),
-      score_(0), level_(0), score_for_next_level_(100), health_potions_count_(3) {}
+#include "GameField.hpp"
 
 Player::~Player() = default;
 
-void Player::move(int dx, int dy) {
-    position_x_ += dx;
-    position_y_ += dy;
+void Player::move(GameField& game_field, int dx, int dy) {
+    if(abs(dx) > 1 || abs(dy) > 1){
+        throw std::invalid_argument("Invalid coords to move");
+    }
+    int x = get_x();
+    int y = get_y();
+    if(game_field.is_cell_passable(x + dx, y + dy)){
+        game_field.move_entity(x, y, x + dx, y + dy);
+        set_position(x + dx, y + dy);
+    }else{}
 }
 
-void Player::addScore(int points) {
+bool Player::attack(GameField& game_field, int dx, int dy){
+    int damage = game_field.get_player()->get_weapon().get_damage();
+
+    if(can_attack(game_field, dx, dy)){
+        auto entity = game_field.get_cell(get_x() + dx, get_y() + dy).get_entity();
+        if(entity){
+            entity->take_damage(damage);
+            return true;
+        }
+    }else{
+        return false;
+    }
+
+    return false;
+}
+
+void Player::add_score(int points) {
     score_ += points;
     
     while (score_ >= score_for_next_level_) {
@@ -26,29 +42,29 @@ void Player::addScore(int points) {
         
         max_health_ = static_cast<int>(max_health_ * 1.1);
         heal_full();
-        weapon_.setDamage(weapon_.getDamage()*1.25);
+        weapon_.set_damage(weapon_.get_damage()*1.25);
         
         std::cout << "LEVEL UP! Now level " << level_ 
                   << "\nHealth: " << health_ << "/" << max_health_
-                  << "\nDamage: " << weapon_.getDamage() << std::endl;
+                  << "\nDamage: " << weapon_.get_damage() << std::endl;
     }
 }
 
-void Player::switchWeapon(WeaponType newWeaponType) {
-    if(newWeaponType == weapon_.getType()){
+void Player::switch_weapon(WeaponType newWeaponType) {
+    if(newWeaponType == weapon_.get_type()){
         std::cout << "This weapon is already selected" << std::endl;
         return;
     }
 
     weapon_ = Weapon(newWeaponType);
-    weapon_.setDamage(weapon_.getDamage()*pow(1.25, level_));
+    weapon_.set_damage(weapon_.get_damage()*pow(1.25, level_));
     
-    std::cout << "Switched to: " << weapon_.getName() 
-              << " (Damage: " << weapon_.getDamage() 
-              << ", Range: " << weapon_.getRange() << ")" << std::endl;
+    std::cout << "Switched to: " << weapon_.get_name() 
+              << " (Damage: " << weapon_.get_damage() 
+              << ", Range: " << weapon_.get_range() << ")" << std::endl;
 }
 
-void Player::useHealthPotion() {
+void Player::use_health_potion(){
     if (health_potions_count_ > 0) {
         health_potions_count_--;
         heal(30);
@@ -58,7 +74,7 @@ void Player::useHealthPotion() {
     }
 }
 
-void Player::addHealthPotion() {
+void Player::add_health_potion() {
     health_potions_count_++;
     std::cout << "Health potion added. Total: " << health_potions_count_ << std::endl;
 }
@@ -67,12 +83,14 @@ void Player::show_stats() const {
     std::cout << "=== PLAYER STATS ===" << std::endl;
     Entity::show_stats();
     
-    std::cout << "Health Potions: " << health_potions_count_ 
-              << "\nLVL: " << level_ << '/' << score_for_next_level_ <<std::endl;
+    std::cout << "Score: " << score_ 
+              << "/" << score_for_next_level_
+              << "\nLevel: " << level_
+              << "\nHealth Potions: " << health_potions_count_ << std::endl;
 }
 
 void Player::update() {
-    if (level_ >= 10 && health_ < max_health_) {
+    if (health_ < max_health_) {
         int regenAmount = level_ / 10;
         heal(regenAmount);
     }

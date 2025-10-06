@@ -7,17 +7,16 @@ class GameField;
 
 class Enemy : public Entity {
 public:
-    Enemy(int health, int startX, int startY);
+    Enemy(int health, int startX, int startY)
+        : Entity(health, startX, startY, WeaponType::FISTS) {}
     
-    void move(Player& player, GameField& game_field);
-    void update(Player& player, GameField& game_field);
+    void update(GameField& game_field);
     
-
     void show_stats() const override;
     void update() override;
-
+    
 private:
-    int turns_since_last_move_;
+    void move(GameField& game_field, Player& player);
 };
 
 #endif

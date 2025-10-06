@@ -16,13 +16,13 @@ enum class WeaponType {
 class Weapon {
 public:
     Weapon(WeaponType type);
-    WeaponType getType() const;
+    WeaponType get_type() const;
 
-    std::string getName() const { return name_; }
-    int getDamage() const { return damage_value_; }
-    int getRange() const { return attack_range_; }
-    void setDamage(int damage){ damage_value_ = damage; }
-
+    std::string get_name() const { return name_; }
+    int get_damage() const { return damage_value_; }
+    int get_range() const { return attack_range_; }
+    void set_damage(int damage){ damage_value_ = damage; }
+    
 private:
     std::string name_;
     int damage_value_;

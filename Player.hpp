@@ -5,18 +5,25 @@
 
 class Player : public Entity {
 public:
-    Player(int health, int startX, int startY);
+    Player(int health, int startX, int startY)
+        : Entity(health, startX, startY, WeaponType::SWORD),
+            score_(0),
+            level_(0),
+            score_for_next_level_(100),
+            health_potions_count_(3) {}
+
     ~Player();
     
-    int getScore() const;
-    int getLevel() const;
-    int getHealthPotionCount() const;
+    int get_score() const { return score_; }
+    int get_level() const { return level_; }
+    int get_health_potion_count() const { return health_potions_count_; }
 
-    void move(int dx, int dy);
-    void addScore(int points);
-    void useHealthPotion();
-    void addHealthPotion();
-    void switchWeapon(WeaponType newWeaponType);
+    void move(GameField& game_field, int dx, int dy);
+    bool attack(GameField& game_field, int dx, int dy);
+    void add_score(int points);
+    void use_health_potion();
+    void add_health_potion();
+    void switch_weapon(WeaponType newWeaponType);
     
     void show_stats() const override;
     void update() override;

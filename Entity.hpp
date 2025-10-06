@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Weapon.hpp"
 
+class GameField;
+
 class Entity {
 public:
     Entity(int health, int x, int y, WeaponType weapon);
@@ -13,7 +15,7 @@ public:
     int get_x() const { return position_x_; }
     int get_y() const { return position_y_; }
     int get_max_health() const { return max_health_; }
-    Weapon get_current_weapon() { return weapon_; }
+    Weapon get_weapon() { return weapon_; }
     
     void set_position(int x, int y);
     void set_health(int health);
@@ -25,8 +27,10 @@ public:
     virtual void show_stats() const;
     
     virtual void update() = 0;
+    bool can_attack(GameField& game_field, int dx, int dy);
 
 protected:
+    bool is_line_of_sight_clear(GameField& game_field, int start_x, int start_y, int end_x, int end_y) const;
     int health_;
     int max_health_;
     Weapon weapon_;
