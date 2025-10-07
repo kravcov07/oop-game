@@ -28,7 +28,6 @@ public:
     bool is_on_slow_cell(GameField& game_field);
     
     void show_stats() const override;
-    void update() override;
     
 private:
     int score_;

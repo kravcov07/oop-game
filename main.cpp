@@ -22,7 +22,7 @@ void game() {
     field.spawn_random_enemies(1);
 
     field.spawn_random_cell_type(10, CellType::SLOW_ZONE);
-    field.spawn_random_cell_type(20, CellType::WALL);
+    field.spawn_random_cell_type(30, CellType::WALL);
     
     std::string command;
     int dx, dy;

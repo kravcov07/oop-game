@@ -22,8 +22,8 @@ public:
     Entity* get_entity() const { return entity_; }
     
     bool is_occupied() const { return entity_ != nullptr; }
-    bool is_passable() const { return type_ == CellType::EMPTY && !is_occupied(); }
-    
+    bool is_passable() const { return type_ != CellType::WALL && !is_occupied(); }
+    bool is_empty() const { return type_ == CellType::EMPTY; }
     void clear_entity() { entity_ = nullptr; }
     
     void set_type(CellType type) { type_ = type; }

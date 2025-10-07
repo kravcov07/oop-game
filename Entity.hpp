@@ -26,7 +26,7 @@ public:
     bool is_alive() const;
     virtual void show_stats() const;
     
-    virtual void update() = 0;
+
     bool can_attack(GameField& game_field, int dx, int dy);
 
 protected:

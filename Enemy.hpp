@@ -13,7 +13,6 @@ public:
     void update(GameField& game_field);
     
     void show_stats() const override;
-    void update() override;
     
 private:
     void move(GameField& game_field, Player& player);

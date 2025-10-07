@@ -60,7 +60,7 @@ bool Player::add_score(int points) {
                   << "\nDamage: " << weapon_.get_damage() << std::endl;
         return true;
     }
-    
+
     return false;
 }
 
@@ -105,11 +105,4 @@ void Player::show_stats() const {
 
 bool Player::is_on_slow_cell(GameField& game_field){
     return game_field.get_cell(get_x(), get_y()).get_type() == CellType::SLOW_ZONE;
-}
-
-void Player::update() {
-    if (health_ < max_health_) {
-        int regenAmount = level_ / 10;
-        heal(regenAmount);
-    }
 }

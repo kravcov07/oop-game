@@ -123,6 +123,13 @@ bool GameField::is_cell_occupied(int x, int y) const{
     return cells_[y][x].is_occupied();
 }
 
+bool GameField::is_cell_empty(int x, int y) const{
+    if(!is_coordinates_valid(x, y)){
+        return false;
+    }
+    return cells_[y][x].is_empty();
+}
+
 Cell& GameField::get_cell(int x, int y){
     if(!is_coordinates_valid(x, y)){
         throw std::out_of_range("Position is out of field bounds");
@@ -228,12 +235,11 @@ void GameField::spawn_random_cell_type(int count, CellType cell_type){
         int x = rand() % width_;
         int y = rand() % height_;
         
-        if (is_cell_passable(x, y)) {
+        if (is_cell_empty(x, y) && !is_cell_occupied(x, y)) {
             cells_[y][x].set_type(cell_type);
             spawned++;
         }
     }
-    
 }
 
 void GameField::update() {

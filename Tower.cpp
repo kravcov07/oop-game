@@ -39,5 +39,3 @@ void Tower::update(GameField& game_field) {
         reduce_cooldown();
     }
 }
-
-void Tower::update() {}

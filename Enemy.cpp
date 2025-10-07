@@ -48,5 +48,3 @@ void Enemy::show_stats() const {
     std::cout << "=== ENEMY STATS ===" << std::endl;
     Entity::show_stats();
 }
-
-void Enemy::update() {}

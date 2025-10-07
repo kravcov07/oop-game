@@ -24,8 +24,6 @@ public:
     void show_stats() const override;
     void update(GameField& game_field);
     bool spawn_enemy(GameField& game_field);
-    
-    void update() override;
 
 private:
     int range_spawn_;
