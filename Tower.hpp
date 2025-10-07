@@ -7,8 +7,8 @@ class Tower: public Entity{
 public:
     Tower(int health, int x, int y,
             WeaponType weapon = WeaponType::UNARMED,
-            int range_spawn = 2,
-            int max_cooldown = 5)
+            int range_spawn = 3,
+            int max_cooldown = 10)
         : Entity(health, x, y, weapon),
             range_spawn_(range_spawn),
             cooldown_(0),

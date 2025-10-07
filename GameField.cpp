@@ -189,7 +189,7 @@ void GameField::spawn_random_towers(int count) {
         int y = rand() % height_;
         
         if (is_cell_passable(x, y)) {
-            auto tower = std::make_unique<Tower>(100, x, y, WeaponType::UNARMED, 2, 5);
+            auto tower = std::make_unique<Tower>(100, x, y);
             if (place_entity(std::move(tower), x, y)) {
                 spawned++;
             }
@@ -317,8 +317,26 @@ void GameField::draw_field() const {
         }
         std::cout << "\n";
     }
+}
 
-    std::cout << "\nPlayer: " << (player_ ? "YES" : "NO");
-    std::cout << " | Enemies: " << enemies_.size();
-    std::cout << " | Towers: " << towers_.size() << std::endl;
+void GameField::show_enemy_stats() const {
+    std::cout << "=== ENEMY STATS ===" << std::endl;
+    
+    for (const auto& enemy : enemies_) {
+        if (enemy->is_alive()) {
+            std::cout << "Enemy (" << enemy->get_x() << ", " << enemy->get_y() 
+                      << ") HP: " << enemy->get_health() << "/" << enemy->get_max_health() << std::endl;
+        }
+    }
+    
+    for (const auto& tower : towers_) {
+        if (tower->is_alive()) {
+            std::cout << "Tower (" << tower->get_x() << ", " << tower->get_y() 
+                      << ") HP: " << tower->get_health() << "/" << tower->get_max_health() << std::endl;
+        }
+    }
+    
+    if (enemies_.empty() && towers_.empty()) {
+        std::cout << "No enemies or towers on the field" << std::endl;
+    }
 }

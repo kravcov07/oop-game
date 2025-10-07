@@ -18,12 +18,14 @@ public:
     int get_level() const { return level_; }
     int get_health_potion_count() const { return health_potions_count_; }
 
-    void move(GameField& game_field, int dx, int dy);
+    bool move(GameField& game_field, int dx, int dy);
     bool attack(GameField& game_field, int dx, int dy);
+    
     void add_score(int points);
     void use_health_potion();
     void add_health_potion();
     void switch_weapon(WeaponType newWeaponType);
+    bool is_on_slow_cell(GameField& game_field);
     
     void show_stats() const override;
     void update() override;

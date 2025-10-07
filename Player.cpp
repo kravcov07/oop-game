@@ -3,7 +3,7 @@
 
 Player::~Player() = default;
 
-void Player::move(GameField& game_field, int dx, int dy) {
+bool Player::move(GameField& game_field, int dx, int dy) {
     if(abs(dx) > 1 || abs(dy) > 1){
         throw std::invalid_argument("Invalid coords to move");
     }
@@ -12,20 +12,28 @@ void Player::move(GameField& game_field, int dx, int dy) {
     if(game_field.is_cell_passable(x + dx, y + dy)){
         game_field.move_entity(x, y, x + dx, y + dy);
         set_position(x + dx, y + dy);
-    }else{}
+        return true;
+    }
+
+    std::cout << "You cant move on" << "(x: " << x + dx << ", y: " << y + dy << ")" << std::endl;
+    return false;
 }
 
 bool Player::attack(GameField& game_field, int dx, int dy){
     int damage = game_field.get_player()->get_weapon().get_damage();
-
+    int to_x = get_x() + dx;
+    int to_y = get_y() + dy;
     if(can_attack(game_field, dx, dy)){
-        auto entity = game_field.get_cell(get_x() + dx, get_y() + dy).get_entity();
+        auto entity = game_field.get_cell(to_x, to_y).get_entity();
         if(entity){
             entity->take_damage(damage);
+            std::cout << "Hit enemy on " << "(x: " << to_x << ", y: " << to_y << ")"<< std::endl;
             return true;
+        }else {
+            std::cout << "Attack missed, no target at (x: " << to_x << ", y: " << to_y << ")" << std::endl;
         }
-    }else{
-        return false;
+    }else {
+        std::cout << "Cant attack, target out of range or line of sight blocked" << std::endl;
     }
 
     return false;
@@ -87,6 +95,10 @@ void Player::show_stats() const {
               << "/" << score_for_next_level_
               << "\nLevel: " << level_
               << "\nHealth Potions: " << health_potions_count_ << std::endl;
+}
+
+bool Player::is_on_slow_cell(GameField& game_field){
+    return game_field.get_cell(get_x(), get_y()).get_type() == CellType::SLOW_ZONE;
 }
 
 void Player::update() {

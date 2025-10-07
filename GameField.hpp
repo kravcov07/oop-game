@@ -47,6 +47,8 @@ public:
     
     void draw_field() const;
 
+    void show_enemy_stats() const;
+
     void update();
     
 private:
