@@ -22,17 +22,17 @@ public:
     Entity* get_entity() const { return entity_; }
     
     bool is_occupied() const { return entity_ != nullptr; }
-    bool is_passable() const { return type_ != CellType::WALL && !is_occupied(); }
+    bool is_passable() const { return type_ == CellType::EMPTY && !is_occupied(); }
     
     void clear_entity() { entity_ = nullptr; }
     
     void set_type(CellType type) { type_ = type; }
     void set_entity(Entity* entity) { entity_ = entity; }
     
-    int get_effect_value() const;
     void apply_effect() const;
-
+    
 private:
+    int get_effect_value() const;
     CellType type_;
     Entity* entity_;
 };

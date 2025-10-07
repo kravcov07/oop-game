@@ -37,8 +37,8 @@ public:
     bool is_cell_occupied(int x, int y) const;
     bool is_cell_passable(int x, int y) const;
 
-    void spawn_random_enemies(int count);
-    void spawn_random_towers(int count);
+    void spawn_random_enemies(int count, int default_health = 50);
+    void spawn_random_towers(int count, int default_r_s = 2, int default_m_c = 10);
     void spawn_random_cell_type(int count, CellType cell_type);
     
     bool place_entity(std::unique_ptr<Entity> entity, int x, int y);

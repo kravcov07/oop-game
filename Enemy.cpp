@@ -20,15 +20,16 @@ void Enemy::move(GameField& game_field, Player& player) {
         int pos_x = get_x() + dx;
         int pos_y = get_y() + dy;
         while(attempts-- > 0){
-            if(game_field.is_cell_passable(pos_x, pos_y)){
+            if(game_field.is_cell_passable(pos_x, pos_y) &&
+                ((pos_x - get_x()) <= 1) && ((pos_y - get_y()) <= 1)){
                 game_field.move_entity(get_x(), get_y(), pos_x, pos_y);
                 set_position(pos_x, pos_y);
                 break;
             }else{
-                if(game_field.is_cell_passable(pos_x, pos_y+1)) pos_y++;
-                else if(game_field.is_cell_passable(pos_x, pos_y-1)) pos_y--;
-                else if(game_field.is_cell_passable(pos_x+1, pos_y)) pos_x++;
+                if(game_field.is_cell_passable(pos_x+1, pos_y)) pos_x++;
                 else if(game_field.is_cell_passable(pos_x-1, pos_y)) pos_x--;
+                else if(game_field.is_cell_passable(pos_x, pos_y+1)) pos_y++;
+                else if(game_field.is_cell_passable(pos_x, pos_y-1)) pos_y--;
             }
         }
     }

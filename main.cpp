@@ -14,12 +14,15 @@ void wait_moves(){
 void game() {
 
     GameField field(25, 25);
-    field.spawn_random_towers(1);
-    field.spawn_random_enemies(1);
-    field.spawn_random_cell_type(20, CellType::WALL);
-    field.spawn_random_cell_type(10, CellType::SLOW_ZONE);
+
     auto player = std::make_unique<Player>(100, 12, 12);
     bool result1 = field.place_entity(std::move(player), 12, 12);
+
+    field.spawn_random_towers(1);
+    field.spawn_random_enemies(1);
+
+    field.spawn_random_cell_type(10, CellType::SLOW_ZONE);
+    field.spawn_random_cell_type(20, CellType::WALL);
     
     std::string command;
     int dx, dy;
@@ -27,9 +30,9 @@ void game() {
     system("cls");
     field.draw_field();
     field.get_player()->show_stats();
-    bool action_performed = false;
     
     while(field.get_player()->is_alive()){
+        bool action_performed = false;
 
         if(field.get_player()->is_on_slow_cell(field)){
             std::cout << "You on slow cell, you skeep one move" << std::endl;
@@ -38,7 +41,14 @@ void game() {
         }
         
         std::cout << "Command: ";
-        std::cin >> command;
+
+        if (!(std::cin >> command)) {
+            if (std::cin.eof()) {
+                std::cout << "\nGame exited" << std::endl;
+                return;
+            }
+            break;
+        }
         
         if (command == "move" || command == "w" || command == "a" || command == "s" || command == "d") {
             char direction;

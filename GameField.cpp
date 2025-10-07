@@ -177,7 +177,7 @@ bool GameField::move_entity(int from_x, int from_y, int to_x, int to_y) {
     return true;
 }
 
-void GameField::spawn_random_towers(int count) {
+void GameField::spawn_random_towers(int count, int default_r_s, int default_m_c) {
     int spawned = 0;
     int attempts = 0;
     const int MAX_ATTEMPTS = count * 10;
@@ -189,7 +189,7 @@ void GameField::spawn_random_towers(int count) {
         int y = rand() % height_;
         
         if (is_cell_passable(x, y)) {
-            auto tower = std::make_unique<Tower>(100, x, y);
+            auto tower = std::make_unique<Tower>(100, x, y, default_r_s, default_m_c);
             if (place_entity(std::move(tower), x, y)) {
                 spawned++;
             }
@@ -197,7 +197,7 @@ void GameField::spawn_random_towers(int count) {
     }    
 }
 
-void GameField::spawn_random_enemies(int count) {
+void GameField::spawn_random_enemies(int count, int default_health) {
     int spawned = 0;
     int attempts = 0;
     const int MAX_ATTEMPTS = count * 10;
@@ -209,7 +209,7 @@ void GameField::spawn_random_enemies(int count) {
         int y = rand() % height_;
     
         if (is_cell_passable(x, y)) {
-            auto enemy = std::make_unique<Enemy>(50, x, y);
+            auto enemy = std::make_unique<Enemy>(default_health, x, y);
             if (place_entity(std::move(enemy), x, y)) {
                 spawned++;
             }
@@ -229,10 +229,6 @@ void GameField::spawn_random_cell_type(int count, CellType cell_type){
         int y = rand() % height_;
         
         if (is_cell_passable(x, y)) {
-            if (player_ && player_->get_x() == x && player_->get_y() == y) {
-                continue;
-            }
-            
             cells_[y][x].set_type(cell_type);
             spawned++;
         }

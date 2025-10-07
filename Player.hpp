@@ -21,7 +21,7 @@ public:
     bool move(GameField& game_field, int dx, int dy);
     bool attack(GameField& game_field, int dx, int dy);
     
-    void add_score(int points);
+    bool add_score(int points);
     void use_health_potion();
     void add_health_potion();
     void switch_weapon(WeaponType newWeaponType);

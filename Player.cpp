@@ -13,6 +13,9 @@ bool Player::move(GameField& game_field, int dx, int dy) {
         game_field.move_entity(x, y, x + dx, y + dy);
         set_position(x + dx, y + dy);
         return true;
+    }else if(game_field.is_cell_occupied(x + dx, y + dy)){
+        attack(game_field, dx, dy);
+        return true;
     }
 
     std::cout << "You cant move on" << "(x: " << x + dx << ", y: " << y + dy << ")" << std::endl;
@@ -39,7 +42,7 @@ bool Player::attack(GameField& game_field, int dx, int dy){
     return false;
 }
 
-void Player::add_score(int points) {
+bool Player::add_score(int points) {
     score_ += points;
     
     while (score_ >= score_for_next_level_) {
@@ -55,7 +58,10 @@ void Player::add_score(int points) {
         std::cout << "LEVEL UP! Now level " << level_ 
                   << "\nHealth: " << health_ << "/" << max_health_
                   << "\nDamage: " << weapon_.get_damage() << std::endl;
+        return true;
     }
+    
+    return false;
 }
 
 void Player::switch_weapon(WeaponType newWeaponType) {
