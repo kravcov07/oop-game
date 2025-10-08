@@ -16,8 +16,8 @@ class Tower;
 class GameField {
 public:
     GameField(int width, int height);
-    GameField(const GameField& other); // Конструктор копирования
-    GameField(GameField&& other); // Конструктор перемещения
+    GameField(const GameField& other);
+    GameField(GameField&& other);
     
     // Операторы присваивания
     GameField& operator=(const GameField& other); // Копирующее присваивание
@@ -25,10 +25,9 @@ public:
     
     ~GameField();
     
-    // Геттеры
+    Cell& get_cell(int x, int y);
     int get_width() const { return width_; }
     int get_height() const { return height_; }
-    Cell& get_cell(int x, int y);
     Player* get_player() const { return player_.get(); }
     const std::vector<std::unique_ptr<Enemy>>& get_enemies() const { return enemies_; }
     const std::vector<std::unique_ptr<Tower>>& get_towers() const { return towers_; }
@@ -38,22 +37,19 @@ public:
     bool is_cell_passable(int x, int y) const;
     bool is_cell_empty(int x, int y) const;
 
+    bool place_entity(std::unique_ptr<Entity> entity, int x, int y);
+    bool move_entity(int from_x, int from_y, int to_x, int to_y);
+
     void spawn_random_enemies(int count, int default_health = 50);
-    void spawn_random_towers(int count, int default_r_s = 2, int default_m_c = 10);
+    void spawn_random_towers(int count, int default_health = 100, int default_r_s = 2, int default_m_c = 10);
     void spawn_random_cell_type(int count, CellType cell_type);
     
-    bool place_entity(std::unique_ptr<Entity> entity, int x, int y);
-
-    bool move_entity(int from_x, int from_y, int to_x, int to_y);
-    
-    void draw_field() const;
-
-    void show_enemy_stats() const;
-
     void update();
     
+    void draw_field() const;
+    void show_enemy_stats() const;
+    
 private:
-    void set_dimensions(int width, int height);
     int width_;
     int height_;
     Cell** cells_;
@@ -61,7 +57,8 @@ private:
     std::vector<std::unique_ptr<Enemy>> enemies_;
     std::vector<std::unique_ptr<Tower>> towers_;
     
-    static bool are_dimensions_valid(int width, int height);
+    bool are_dimensions_valid(int width, int height);
+    void set_dimensions(int width, int height);
     void initialize_cells();
     void cleanup_cells();
     void copy_from(const GameField& other);

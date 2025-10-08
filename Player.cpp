@@ -3,6 +3,48 @@
 
 Player::~Player() = default;
 
+bool Player::add_score(int points) {
+    score_ += points;
+    
+    while (score_ >= score_for_next_level_) {
+        level_++;
+        score_ -= score_for_next_level_;
+        
+        score_for_next_level_ += 50;
+        
+        max_health_ = static_cast<int>(max_health_ * 1.1);
+        heal_full();
+        weapon_.set_damage(weapon_.get_damage()*1.25);
+        
+        std::cout << "LEVEL UP! Now level " << level_ 
+                  << "\nHealth: " << health_ << "/" << max_health_
+                  << "\nDamage: " << weapon_.get_damage() << std::endl;
+        return true;
+    }
+
+    return false;
+}
+
+void Player::add_health_potion() {
+    health_potions_count_++;
+    std::cout << "Health potion added. Total: " << health_potions_count_ << std::endl;
+}
+
+void Player::use_health_potion(){
+    if (health_potions_count_ > 0) {
+        health_potions_count_--;
+        heal(30);
+        std::cout << "Used health potion. Health: " << health_ << std::endl;
+    } else {
+        std::cout << "No health potions!" << std::endl;
+    }
+}
+
+bool Player::is_on_slow_cell(GameField& game_field){
+    return game_field.get_cell(get_x(), get_y()).get_type() == CellType::SLOW_ZONE;
+}
+
+
 bool Player::move(GameField& game_field, int dx, int dy) {
     if(abs(dx) > 1 || abs(dy) > 1){
         throw std::invalid_argument("Invalid coords to move");
@@ -36,31 +78,8 @@ bool Player::attack(GameField& game_field, int dx, int dy){
             std::cout << "Attack missed, no target at (x: " << to_x << ", y: " << to_y << ")" << std::endl;
         }
     }else {
-        std::cout << "Cant attack, target out of range or line of sight blocked" << std::endl;
+        std::cout << "Cant attack line of sight blocked" << std::endl;
     }
-
-    return false;
-}
-
-bool Player::add_score(int points) {
-    score_ += points;
-    
-    while (score_ >= score_for_next_level_) {
-        level_++;
-        score_ -= score_for_next_level_;
-        
-        score_for_next_level_ += 50;
-        
-        max_health_ = static_cast<int>(max_health_ * 1.1);
-        heal_full();
-        weapon_.set_damage(weapon_.get_damage()*1.25);
-        
-        std::cout << "LEVEL UP! Now level " << level_ 
-                  << "\nHealth: " << health_ << "/" << max_health_
-                  << "\nDamage: " << weapon_.get_damage() << std::endl;
-        return true;
-    }
-
     return false;
 }
 
@@ -78,21 +97,6 @@ void Player::switch_weapon(WeaponType newWeaponType) {
               << ", Range: " << weapon_.get_range() << ")" << std::endl;
 }
 
-void Player::use_health_potion(){
-    if (health_potions_count_ > 0) {
-        health_potions_count_--;
-        heal(30);
-        std::cout << "Used health potion. Health: " << health_ << std::endl;
-    } else {
-        std::cout << "No health potions!" << std::endl;
-    }
-}
-
-void Player::add_health_potion() {
-    health_potions_count_++;
-    std::cout << "Health potion added. Total: " << health_potions_count_ << std::endl;
-}
-
 void Player::show_stats() const {
     std::cout << "=== PLAYER STATS ===" << std::endl;
     Entity::show_stats();
@@ -101,8 +105,4 @@ void Player::show_stats() const {
               << "/" << score_for_next_level_
               << "\nLevel: " << level_
               << "\nHealth Potions: " << health_potions_count_ << std::endl;
-}
-
-bool Player::is_on_slow_cell(GameField& game_field){
-    return game_field.get_cell(get_x(), get_y()).get_type() == CellType::SLOW_ZONE;
 }

@@ -54,14 +54,6 @@ bool Entity::can_attack(GameField& game_field, int dx, int dy){
             target_x, target_y);
 }
 
-void Entity::show_stats() const {
-    std::cout << "Health: " << health_ << "/" << max_health_
-              << "\nPosition: (" << position_x_ << ", " << position_y_ << ")" 
-              << "\nWeapon: " << weapon_.get_name()
-              << " (Damage: " << weapon_.get_damage() 
-              << ", Range: " << weapon_.get_range() << ")" << std::endl;
-}
-
 bool Entity::is_line_of_sight_clear(GameField& game_field,
         int start_x, int start_y, int end_x, int end_y) const {
 
@@ -95,4 +87,12 @@ bool Entity::is_line_of_sight_clear(GameField& game_field,
     }
     
     return true;
+}
+
+void Entity::show_stats() const {
+    std::cout << "Health: " << health_ << "/" << max_health_
+              << "\nPosition: (" << position_x_ << ", " << position_y_ << ")" 
+              << "\nWeapon: " << weapon_.get_name()
+              << " (Damage: " << weapon_.get_damage() 
+              << ", Range: " << weapon_.get_range() << ")" << std::endl;
 }

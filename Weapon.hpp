@@ -22,7 +22,6 @@ public:
     int get_damage() const { return damage_value_; }
     int get_range() const { return attack_range_; }
     void set_damage(int damage){ damage_value_ = damage; }
-    
 private:
     std::string name_;
     int damage_value_;

@@ -1,10 +1,10 @@
 #include "Tower.hpp"
 
-void Tower::show_stats() const {
-    std::cout << "=== TOWER STATS ===" << std::endl;
-    Entity::show_stats();
-    std::cout << "Spawn Range: " << range_spawn_ 
-              << "\nCooldown: " << cooldown_ << "/" << max_cooldown_ << std::endl;
+void Tower::update(GameField& game_field) {
+    if(is_alive()){
+        spawn_enemy(game_field);
+        reduce_cooldown();
+    }
 }
 
 bool Tower::spawn_enemy(GameField& game_field){
@@ -33,9 +33,9 @@ bool Tower::spawn_enemy(GameField& game_field){
     return false;
 }
 
-void Tower::update(GameField& game_field) {
-    if(is_alive()){
-        spawn_enemy(game_field);
-        reduce_cooldown();
-    }
+void Tower::show_stats() const {
+    std::cout << "=== TOWER STATS ===" << std::endl;
+    Entity::show_stats();
+    std::cout << "Spawn Range: " << range_spawn_ 
+              << "\nCooldown: " << cooldown_ << "/" << max_cooldown_ << std::endl;
 }

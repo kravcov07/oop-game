@@ -24,10 +24,9 @@ public:
     void heal(int amount);
     void heal_full();
     bool is_alive() const;
-    virtual void show_stats() const;
-    
-
     bool can_attack(GameField& game_field, int dx, int dy);
+
+    virtual void show_stats() const;
 
 protected:
     bool is_line_of_sight_clear(GameField& game_field, int start_x, int start_y, int end_x, int end_y) const;

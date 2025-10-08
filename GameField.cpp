@@ -1,14 +1,6 @@
 #include "GameField.hpp"
 #include "Tower.hpp"
 
-void GameField::set_dimensions(int width, int height){
-    if (!are_dimensions_valid(height, width)){
-        throw std::invalid_argument("Invalid field dimensions");
-    }
-    width_ = width;
-    height_ = height;
-}
-
 GameField::GameField(int width, int height)
     : width_(width), height_(height), cells_(nullptr) {
         if (!are_dimensions_valid(height, width)){
@@ -17,7 +9,7 @@ GameField::GameField(int width, int height)
 
         initialize_cells();
     }
-    
+
 GameField::GameField(const GameField& other)
     : width_(other.get_width()), height_(other.get_height()), cells_(nullptr){
     
@@ -31,8 +23,10 @@ GameField::GameField(GameField&& other){
 GameField& GameField::operator=(const GameField& other) {
     if (this != &other) {
         cleanup_cells();
+        
         width_ = other.width_;
         height_ = other.height_;
+
         copy_from(other);
     }
     return *this;
@@ -50,66 +44,12 @@ GameField::~GameField(){
     cleanup_cells();
 }
 
-void GameField::initialize_cells(){
-    cells_ = new Cell*[height_];   
-    for(int i = 0; i < height_; i++){
-        cells_[i] = new Cell[width_];
-
-        for(int j = 0; j < width_; j++){
-            if(i == 0 || i == height_ - 1 || j == 0 || j == width_ - 1){
-                cells_[i][j].set_type(CellType::WALL);
-            }
-        }
-    }
-}
-
-void GameField::cleanup_cells(){
-    if(cells_){
-        for(int i = 0; i < height_; i++){
-            delete[] cells_[i];
-       }
-       delete[] cells_;
-       cells_ = nullptr;
-    }
-}
-
-void GameField::copy_from(const GameField& other){
-    initialize_cells();
-    for(int i = 0; i < height_; i++){
-        for(int j = 0; j < width_; j++){
-            cells_[i][j] = other.cells_[i][j];
-        }
+Cell& GameField::get_cell(int x, int y){
+    if(!is_coordinates_valid(x, y)){
+        throw std::out_of_range("Position is out of field bounds");
     }
 
-    if(other.get_player()){
-        player_ = std::unique_ptr<Player>(new Player(*other.player_));
-    }
-
-    for(const auto& enemy: other.enemies_){
-        enemies_.push_back(std::unique_ptr<Enemy>(new Enemy(*enemy)));
-    }
-    
-    for(const auto& tower: other.towers_){
-        towers_.push_back(std::unique_ptr<Tower>(new Tower(*tower)));
-    }
-}
-
-void GameField::move_from(GameField&& other){
-    set_dimensions(other.get_width(), other.get_height());
-    cells_ = other.cells_;
-    player_ = std::move(other.player_);
-    enemies_ = std::move(other.enemies_);
-    towers_ = std::move(other.towers_);
-
-    other.set_dimensions(0, 0);
-    other.cells_ = nullptr;
-}
-
-bool GameField::are_dimensions_valid(int width, int height){
-    const int MIN_SIZE = 10;
-    const int MAX_SIZE = 25;
-    return width >= MIN_SIZE && width <= MAX_SIZE\
-            && height >= MIN_SIZE && height <= MAX_SIZE;
+    return cells_[y][x];
 }
 
 bool GameField::is_coordinates_valid(int x, int y) const {
@@ -123,26 +63,17 @@ bool GameField::is_cell_occupied(int x, int y) const{
     return cells_[y][x].is_occupied();
 }
 
+bool GameField::is_cell_passable(int x, int y) const {
+    if (!is_coordinates_valid(x, y)) return false;
+    return cells_[y][x].is_passable();
+}
+
 bool GameField::is_cell_empty(int x, int y) const{
     if(!is_coordinates_valid(x, y)){
         return false;
     }
     return cells_[y][x].is_empty();
 }
-
-Cell& GameField::get_cell(int x, int y){
-    if(!is_coordinates_valid(x, y)){
-        throw std::out_of_range("Position is out of field bounds");
-    }
-
-    return cells_[y][x];
-}
-
-bool GameField::is_cell_passable(int x, int y) const {
-    if (!is_coordinates_valid(x, y)) return false;
-    return cells_[y][x].is_passable();
-}
-
 
 bool GameField::place_entity(std::unique_ptr<Entity> entity, int x, int y) {
     if (!is_cell_passable(x, y)) {
@@ -184,7 +115,7 @@ bool GameField::move_entity(int from_x, int from_y, int to_x, int to_y) {
     return true;
 }
 
-void GameField::spawn_random_towers(int count, int default_r_s, int default_m_c) {
+void GameField::spawn_random_towers(int count, int default_health, int default_r_s, int default_m_c) {
     int spawned = 0;
     int attempts = 0;
     const int MAX_ATTEMPTS = count * 10;
@@ -196,7 +127,7 @@ void GameField::spawn_random_towers(int count, int default_r_s, int default_m_c)
         int y = rand() % height_;
         
         if (is_cell_passable(x, y)) {
-            auto tower = std::make_unique<Tower>(100, x, y, default_r_s, default_m_c);
+            auto tower = std::make_unique<Tower>(default_health, x, y, default_r_s, default_m_c);
             if (place_entity(std::move(tower), x, y)) {
                 spawned++;
             }
@@ -282,6 +213,76 @@ void GameField::update() {
     }
 }
 
+bool GameField::are_dimensions_valid(int width, int height){
+    const int MIN_SIZE = 10;
+    const int MAX_SIZE = 25;
+    return width >= MIN_SIZE && width <= MAX_SIZE\
+            && height >= MIN_SIZE && height <= MAX_SIZE;
+}
+
+void GameField::set_dimensions(int width, int height){
+    if (!are_dimensions_valid(height, width)){
+        throw std::invalid_argument("Invalid field dimensions");
+    }
+    width_ = width;
+    height_ = height;
+}
+
+void GameField::initialize_cells(){
+    cells_ = new Cell*[height_];   
+    for(int i = 0; i < height_; i++){
+        cells_[i] = new Cell[width_];
+
+        for(int j = 0; j < width_; j++){
+            if(i == 0 || i == height_ - 1 || j == 0 || j == width_ - 1){
+                cells_[i][j].set_type(CellType::WALL);
+            }
+        }
+    }
+}
+
+void GameField::cleanup_cells(){
+    if(cells_){
+        for(int i = 0; i < height_; i++){
+            delete[] cells_[i];
+       }
+       delete[] cells_;
+       cells_ = nullptr;
+    }
+}
+
+void GameField::copy_from(const GameField& other){
+    initialize_cells();
+    for(int i = 0; i < height_; i++){
+        for(int j = 0; j < width_; j++){
+            cells_[i][j] = other.cells_[i][j];
+        }
+    }
+
+    if(other.get_player()){
+        player_ = std::unique_ptr<Player>(new Player(*other.player_));
+    }
+
+    for(const auto& enemy: other.enemies_){
+        enemies_.push_back(std::unique_ptr<Enemy>(new Enemy(*enemy)));
+    }
+    
+    for(const auto& tower: other.towers_){
+        towers_.push_back(std::unique_ptr<Tower>(new Tower(*tower)));
+    }
+}
+
+void GameField::move_from(GameField&& other){
+    set_dimensions(other.get_width(), other.get_height());
+    cells_ = other.cells_;
+    player_ = std::move(other.player_);
+    enemies_ = std::move(other.enemies_);
+    towers_ = std::move(other.towers_);
+
+    other.set_dimensions(0, 0);
+    other.cells_ = nullptr;
+}
+
 void GameField::draw_field() const {
     std::cout << "   ";
     for (int x = 0; x < width_; x++) {
@@ -330,14 +331,12 @@ void GameField::show_enemy_stats() const {
                       << ") HP: " << enemy->get_health() << "/" << enemy->get_max_health() << std::endl;
         }
     }
-    
     for (const auto& tower : towers_) {
         if (tower->is_alive()) {
             std::cout << "Tower (" << tower->get_x() << ", " << tower->get_y() 
                       << ") HP: " << tower->get_health() << "/" << tower->get_max_health() << std::endl;
         }
     }
-    
     if (enemies_.empty() && towers_.empty()) {
         std::cout << "No enemies or towers on the field" << std::endl;
     }

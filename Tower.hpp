@@ -21,9 +21,9 @@ public:
     void reset_cooldown() { cooldown_ = max_cooldown_; }
     int get_range_spawn() const { return range_spawn_; }
     
-    void show_stats() const override;
     void update(GameField& game_field);
     bool spawn_enemy(GameField& game_field);
+    void show_stats() const override;
 
 private:
     int range_spawn_;

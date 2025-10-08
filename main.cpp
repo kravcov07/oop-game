@@ -30,12 +30,13 @@ void game() {
     system("cls");
     field.draw_field();
     field.get_player()->show_stats();
+    field.show_enemy_stats();
     
     while(field.get_player()->is_alive()){
-        bool action_performed = false;
+        bool action_performed = true;
 
         if(field.get_player()->is_on_slow_cell(field)){
-            std::cout << "You on slow cell, you skeep one move" << std::endl;
+            std::cout << "You are on a slow cell, you skip one move" << std::endl;
             field.update();
             wait_moves();
         }
@@ -64,7 +65,7 @@ void game() {
             case 's': action_performed = field.get_player()->move(field, 0, 1); break;
             case 'd': action_performed = field.get_player()->move(field, 1, 0); break;
             default: 
-                std::cout << "Invalid direction! Use w/a/s/d" << std::endl;
+                std::cout << "Invalid direction use w/a/s/d" << std::endl;
                 wait_moves();
                 continue;
             }
@@ -89,7 +90,7 @@ void game() {
                     case 3: new_weapon = WeaponType::STAFF; break;
                     case 4: new_weapon = WeaponType::FISTS; break;
                     default:
-                        std::cout << "Invalid weapon number! Use 1-4" << std::endl;
+                        std::cout << "Invalid weapon number use 1-4" << std::endl;
                         continue;
                 }
             } else {
@@ -98,7 +99,7 @@ void game() {
                 else if (weapon_input == "staff") new_weapon = WeaponType::STAFF;
                 else if (weapon_input == "fists") new_weapon = WeaponType::FISTS;
                 else {
-                    std::cout << "Invalid weapon! Available: sword, bow, staff, fists" << std::endl;
+                    std::cout << "Invalid weapon available: sword, bow, staff, fists" << std::endl;
                     continue;
                 }
             }
@@ -139,7 +140,9 @@ void game() {
             continue;
         }
 
-        if(command != "move"){
+        if(command != "move" && command != "help" && 
+            command != "stat" && command != "stats" &&
+            command != "enemy" && command != "list"){
             wait_moves();
         }
 
@@ -149,7 +152,6 @@ void game() {
             system("cls");
             field.draw_field();
         }
-
     }
     
     std::cout << "=== GAME OVER ===" << std::endl;
@@ -160,6 +162,5 @@ void game() {
 int main() {
     std::srand(static_cast<unsigned int>(std::time(0)));
     game();
-
     return 0;
 }
